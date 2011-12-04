@@ -10,14 +10,14 @@ require "json"
 ######
 
 class SiriProxy::Plugin::MapMe_At < SiriProxy::Plugin
-  def initialize(config)
+  def initialize(config = {})
+    @config = config
     #if you have custom configuration options, process them here!
-    @oauth_settings = YAML::load( File.open( ENV["HOME"]+"/.mapme.at/settings.yml" ) )
   end
 
   def access_token
-    consumer = OAuth::Consumer.new @oauth_settings["consumer_token"], @oauth_settings["consumer_secret"], { :site => "http://mapme.at"}
-    OAuth::AccessToken.new(consumer, @oauth_settings["access_token"], @oauth_settings["access_secret"])
+    consumer = OAuth::Consumer.new @config["consumer_key"], @config["consumer_secret"], { :site => "http://mapme.at"}
+    OAuth::AccessToken.new(consumer, @config["oauth_token"], @config["oauth_token_secret"])
   end
 
   listen_for /(check me in|map me here)/i do
