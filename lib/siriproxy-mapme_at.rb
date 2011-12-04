@@ -21,9 +21,27 @@ class SiriProxy::Plugin::MapMe_At < SiriProxy::Plugin
   end
 
   listen_for /(check me in|map me here)/i do
-    say "Checking you in" # Tell the user
+    if @config["current_location"].nil?
+      say "I need you to put the current location in config."
 
-    request_completed
+      request_completed
+    else
+      Thread.new {
+        begin
+          resp = access_token.post("/api/mapme.json?label=#{@config["current_location"]}")
+          if resp.code == "200"
+            say "I checked you in at #{@config["current_location"]}"
+            request_completed
+          else
+            raise Exception.new "mapme.at request failed"
+          end
+        rescue Exception
+          pp $!
+          say "Sorry, I encountered an error."
+          request_completed
+        end
+      }
+    end
   end
 
   listen_for /where is (.*)[?!]*$/i do |user|
@@ -55,8 +73,8 @@ class SiriProxy::Plugin::MapMe_At < SiriProxy::Plugin
         map_item.location.stateCode = ""
         map_item.location.postalCode = ""
         map_item.location.countryCode = result["country_code"]
-	map_item.location.latitude = result["lat"].to_f
-	map_item.location.longitude = result["lon"].to_f
+        map_item.location.latitude = result["lat"].to_f
+        map_item.location.longitude = result["lon"].to_f
         pp map_item.location
         pp result
         add_views = SiriAddViews.new
