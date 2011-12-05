@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.email       = [""]
   s.homepage    = ""
   s.summary     = %q{A mapme.at Siri Proxy Plugin}
-  s.description = %q{This plugin will allow users to check in at the current location or other locations by visiting a web page. }
+  s.description = %q{This plugin will allow users to check in at the current location and find where people are. }
 
   s.rubyforge_project = "siriproxy-mapme_at"
 
